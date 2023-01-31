@@ -1,0 +1,86 @@
+using System;
+using System.IO;
+
+
+String line;
+String keep = "";//記録用
+String wkeep = "";//表示用
+
+try
+{
+    //ファイル パスとファイル名を StreamReader コンストラクターに渡します。
+    StreamReader sr = new StreamReader("C:tesutorogu.txt");
+    //テキストの最初の行を読む
+    line = sr.ReadLine();
+    string linefa = line;
+    //ファイルの終わりに到達するまで読み続けます
+    while (line != null)
+    {
+        string lines = line;
+        //v1s
+        int linei = line.LastIndexOf(","); //2つ目の,の位置取得
+        string lineex = line.Substring(15, linei - 15);//問題なし
+        int linez = lineex.IndexOf(".");
+        int zz;
+        string lineex1 = Convert.ToString(Convert.ToInt32(lineex.Substring(0, linez)), 2);
+        for (zz = lineex1.Length; 8 != zz; zz = lineex1.Length) { lineex1 = "0" + lineex1; }
+        lineex = lineex.Substring(linez + 1);
+        linez = lineex.IndexOf(".");
+        string lineex2 = Convert.ToString(Convert.ToInt32(lineex.Substring(0, linez)), 2);//
+        for (zz = lineex2.Length; 8 != zz; zz = lineex2.Length) { lineex2 = "0" + lineex2; }
+        lineex = lineex.Substring(linez + 1);
+        linez = lineex.IndexOf(".");
+        string lineex3 = Convert.ToString(Convert.ToInt32(lineex.Substring(0, linez)), 2);
+        for (zz = lineex3.Length; 8 != zz; zz = lineex3.Length) { lineex3 = "0" + lineex3; }
+        lineex = lineex.Substring(linez + 1);
+        linez = lineex.IndexOf("/");
+        string lineex4 = Convert.ToString(Convert.ToInt32(lineex.Substring(0, linez)), 2);
+        for (zz = lineex4.Length; 8 != zz; zz = lineex4.Length) { lineex4 = "0" + lineex4; }
+        lineex = lineex.Substring(linez + 1);
+        string lineex1_4 = lineex1 + lineex2 + lineex3 + lineex4;
+        lineex1_4 = lineex1_4.Substring(0, Convert.ToInt32(lineex) - 1);//m
+        line = line.Substring(0, 15) + lineex1_4 + line.Substring(linei);
+        //v1e
+        if (0 <= lines.IndexOf("-"))
+        {
+
+            keep = keep +line ;
+            line = sr.ReadLine();
+        }
+        else 
+        {
+            if (0 <= keep.IndexOf(lineex1_4))//同じアドレスで故障がないか確認する
+            {
+                long fexta=0;
+                int fex = keep.IndexOf(lineex1_4);
+                string ft = keep.Substring(fex-15, 14);
+                long fext = long.Parse(ft.Substring(0,4))*31104000+ long.Parse(ft.Substring(4, 2))*2592000+ long.Parse(ft.Substring(6, 2))*86400+ long.Parse(ft.Substring(8, 2))*3600+ long.Parse(ft.Substring(10, 2))*3600+ long.Parse(ft.Substring(12,2))*60;
+                //string linef = line.Substring(0, 14);
+                fext =  (long.Parse((line.Substring(0, 14)).Substring(0, 4)) * 31104000 + long.Parse((line.Substring(0, 14)).Substring(4, 2)) * 2592000 + long.Parse((line.Substring(0, 14)).Substring(6, 2)) * 86400 + long.Parse((line.Substring(0, 14)).Substring(8, 2)) * 3600 + long.Parse((line.Substring(0, 14)).Substring(10, 2)) * 3600 + long.Parse((line.Substring(0, 14)).Substring(12, 2)) * 60)-fext;
+                if (fext >= 31104000) {fexta=100000000*fext/ 31104000; fext=fext%31104000; }
+                if (fext >= 2592000) { fexta = fexta + (1000000 * fext / 2592000); fext = fext % 2592000; }
+                if (fext >= 86400) { fexta = fexta + (10000 * fext / 86400); fext = fext % 86400; }
+                if (fext >= 3600) { fexta = fexta + (100 * fext / 3600); fext = fext % 3600; }
+                if (fext >= 60) { fexta = fexta + (1 * fext / 60); fext = fext % 60; }
+                fexta = fexta+ fext;
+                ft = Convert.ToString(fexta);
+                wkeep= wkeep + linefa.Substring(15, linei - 15)+","+ft+"\r\n";
+            }
+            //次の行を読む
+            line = sr.ReadLine();
+            linefa = line;
+        }
+    }
+    //ファイルを閉じる
+    sr.Close();
+    Console.WriteLine(wkeep);
+    Console.ReadLine();
+}
+catch (Exception e)
+{
+    Console.WriteLine("Exception: " + e.Message);
+}
+finally
+{
+    Console.WriteLine("Executing finally block.");
+}
